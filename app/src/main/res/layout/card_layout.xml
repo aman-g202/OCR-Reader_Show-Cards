@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -8,10 +8,12 @@
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="8dp"
+        card_view:cardCornerRadius="10dp"
         card_view:cardUseCompatPadding="true"
-        card_view:cardElevation="6dp"
-        android:layout_margin="8dp">
+        card_view:cardPreventCornerOverlap="false"
+        card_view:cardElevation="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -33,7 +35,7 @@
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="12dp"
                     android:layout_weight="1.2">
 
                     <RelativeLayout
@@ -45,23 +47,28 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:id="@+id/name"
+                            android:id="@+id/namecard"
                             android:text="Aman Gupta"
+                            android:textColor="#737171"
                             android:textSize="16dp"/>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/name"
+                            android:layout_below="@id/namecard"
                             android:layout_marginTop="2dp"
                             android:text="amangupta15jan@gmail.com"
-                            android:id="@+id/email"/>
+                            android:textColor="#a6a2a2"
+                            android:textSize="13dp"
+                            android:id="@+id/emailcard"/>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/email"
-                            android:id="@+id/mobile"
+                            android:layout_below="@id/emailcard"
+                            android:id="@+id/mobilecard"
+                            android:textSize="12dp"
+                            android:textColor="#a6a2a2"
                             android:layout_marginTop="4dp"
                             android:text="7415806040"/>
 

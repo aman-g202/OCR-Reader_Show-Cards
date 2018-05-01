@@ -39,8 +39,15 @@ import com.guna.ocrlibrary.OCRCapture;
 import java.io.Console;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
+import corporation.darkshadow.ocr.Adapters.CardAdapter;
+import corporation.darkshadow.ocr.Pojo.CardDetails;
 import corporation.darkshadow.ocr.RecyclerDivider.MyDividerItemDecoration;
+import corporation.darkshadow.ocr.Utils.SharedPrefUtil;
 
 import static com.guna.ocrlibrary.OcrCaptureActivity.TextBlockObject;
 
@@ -57,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
     public ImageView imageView;
     public EditText name,mobile,email;
     private RecyclerView recyclerView;
+    private CardAdapter cardAdapter;
+
+    private List<CardDetails> cardsList = new ArrayList<>();
+    private SharedPrefUtil prefUtil;
+    int totalcard;
+    Set<String> cardinfos = new HashSet<>();
+    public List<String> cardInfosArrayList = new ArrayList<>();
+    public CardDetails cardDetails;
+    String temp11,temp12,temp13;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,24 +81,78 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        editText = (EditText) findViewById(R.id.imagetext);
-        imageView = (ImageView)findViewById(R.id.captureimage);
-        name = (EditText)findViewById(R.id.name);
-        email = (EditText)findViewById(R.id.email);
-        mobile = (EditText)findViewById(R.id.mobile);
-        clickimage = (Button)findViewById(R.id.clickimage);
+//        editText = (EditText) findViewById(R.id.imagetext);
+//        imageView = (ImageView)findViewById(R.id.captureimage);
+//        name = (EditText)findViewById(R.id.name);
+//        email = (EditText)findViewById(R.id.email);
+//        mobile = (EditText)findViewById(R.id.mobile);
+//        clickimage = (Button)findViewById(R.id.clickimage);
         recyclerView = (RecyclerView)findViewById(R.id.recycler_card);
+        prefUtil = new SharedPrefUtil(MainActivity.this);
 
+        cardAdapter = new CardAdapter(MainActivity.this,cardsList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new MyDividerItemDecoration(MainActivity.this,LinearLayoutManager.VERTICAL,16));
+//        recyclerView.addItemDecoration(new MyDividerItemDecoration(MainActivity.this,LinearLayoutManager.VERTICAL,16));
+        recyclerView.setAdapter(cardAdapter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
         } else {
             builder = new AlertDialog.Builder(this);
         }
+
+        if (prefUtil.getSize("size",0) > 0){
+            totalcard = prefUtil.getSize("size",0);
+//            Toast.makeText(MainActivity.this,String.valueOf(totalcard),Toast.LENGTH_LONG).show();
+            for(int i=1; i <= totalcard; i++){
+                temp11="";temp12="";temp13="";
+                cardinfos = prefUtil.retrieveCard("card"+i,null);
+                cardInfosArrayList.clear();
+                cardInfosArrayList.addAll(cardinfos);
+                cardDetails = new CardDetails();
+//                Iterator<String> it = cardinfos.iterator();
+//                Toast.makeText(MainActivity.this,it.next()+"-"+it.next()+"-"+it.next(),Toast.LENGTH_SHORT).show();
+                temp11 = cardInfosArrayList.get(0);
+                temp12 = cardInfosArrayList.get(1);
+                temp13 = cardInfosArrayList.get(2);
+
+                if (temp11.contains("@")){
+                    cardDetails.setEmail(temp11);
+                }else if (temp12.contains("@")){
+                    cardDetails.setEmail(temp12);
+                }else if (temp13.contains("@")){
+                    cardDetails.setEmail(temp13);
+                }
+
+                if (temp11.matches("[0-9 ,]+")){
+                    cardDetails.setPhone(temp11);
+                }else if (temp12.matches("[0-9 ,]+")){
+                    cardDetails.setPhone(temp12);
+                }else if (temp13.matches("[0-9 ,]+")){
+                    cardDetails.setPhone(temp13);
+                }
+
+                if (temp11.matches("[a-zA-Z]+") && !(temp11.contains("@"))){
+                    cardDetails.setName(temp11);
+                }else if (temp12.matches("[a-zA-Z]+") && !(temp12.contains("@"))){
+                    cardDetails.setName(temp12);
+                }else if (temp13.matches("[a-zA-Z]+") && !(temp13.contains("@"))){
+                    cardDetails.setName(temp13);
+                }
+
+
+//                cardDetails.setName(cardInfosArrayList.get(0));
+//                cardDetails.setEmail(cardInfosArrayList.get(1));
+//                cardDetails.setPhone(cardInfosArrayList.get(2));
+                cardsList.add(cardDetails);
+            }
+//
+            cardAdapter.notifyDataSetChanged();
+        }
+
+
 
 //        Code to use ocr using google dependency library
 
@@ -177,14 +247,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        clickimage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent  = new Intent("android.media.action.IMAGE_CAPTURE");
-                startActivityForResult(intent, CAMERA);
-            }
-        });
+//        clickimage.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent  = new Intent("android.media.action.IMAGE_CAPTURE");
+//                startActivityForResult(intent, CAMERA);
+//            }
+//        });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Really Exit?")
+                .setMessage("Are you sure you want to exit?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        MainActivity.super.onBackPressed();
+                        quit();
+                    }
+                }).create().show();
+    }
+
+    public void quit() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(startMain);
     }
 
     private void getPermission() {
@@ -261,9 +354,19 @@ public class MainActivity extends AppCompatActivity {
                             mob += "\n";
                         }
                         if(temp.contains("@")){
-                            if (temp.contains("E-mail")){
+                            if (temp.contains("E-mail:")){
+                                tempmail = temp;
+                                tempmail = tempmail.replace("E-mail:","");
+                                mail += tempmail;
+                            }
+                            else if (temp.contains("E-mail")){
                                 tempmail = temp;
                                 tempmail = tempmail.replace("E-mail","");
+                                mail += tempmail;
+                            }
+                            else if (temp.contains("Email:")){
+                                tempmail = temp;
+                                tempmail = tempmail.replace("Email:","");
                                 mail += tempmail;
                             }
                             else {
@@ -292,10 +395,17 @@ public class MainActivity extends AppCompatActivity {
                         metatext += lines[i];
                         metatext += "\n";
                     }
-                    name.setText(naam);
-                    mobile.setText(mainmob);
-                    email.setText(mail);
-                    editText.setText(metatext);
+//                    name.setText(naam);
+//                    mobile.setText(mainmob);
+//                    email.setText(mail);
+//                    editText.setText(metatext);
+
+                    Intent intent  = new Intent(MainActivity.this,FormActivity.class);
+                    intent.putExtra("metatext",metatext);
+                    intent.putExtra("name",naam);
+                    intent.putExtra("email",mail);
+                    intent.putExtra("mobile",mainmob);
+                    startActivity(intent);
 
                 }
             } else if (requestCode == LOAD_IMAGE_RESULTS) {
@@ -303,10 +413,10 @@ public class MainActivity extends AppCompatActivity {
                 String text = OCRCapture.Builder(this).getTextFromUri(pickedImage);
                 editText.setText(text);
             }
-            else if (requestCode == CAMERA && resultCode == RESULT_OK){
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                imageView.setImageBitmap(bitmap);
-            }
+//            else if (requestCode == CAMERA && resultCode == RESULT_OK){
+//                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//                imageView.setImageBitmap(bitmap);
+//            }
         }
     }
 

@@ -6,9 +6,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="40dp"
         android:id="@+id/cardlayout"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_card"
@@ -30,7 +30,7 @@
             android:layout_height="match_parent"
             android:id="@+id/formlayout"
             android:scrollbars="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
                 <!--<LinearLayout-->
                     <!--android:layout_width="match_parent"-->
